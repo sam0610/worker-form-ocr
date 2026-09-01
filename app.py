@@ -11,6 +11,35 @@ from googleapiclient.http import MediaIoBaseUpload
 
 st.set_page_config(page_title="散工申報表即時辨識 App", layout="wide")
 
+# ---- 強制相機預覽/相片預覽用全螢幕闊度顯示，方便手機用戶睇清楚 ----
+st.markdown("""
+<style>
+    /* 相機直播預覽 (未影相之前) */
+    video {
+        width: 100% !important;
+        height: auto !important;
+        max-height: 80vh !important;
+    }
+    /* 已影低嘅相片預覽 */
+    div[data-testid="stCameraInput"] img,
+    div[data-testid="stImage"] img {
+        width: 100% !important;
+        height: auto !important;
+        object-fit: contain !important;
+    }
+    /* 主內容區盡量用盡闊度，手機睇少啲留白 */
+    .block-container {
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+        max-width: 100% !important;
+    }
+    /* camera_input 個外層容器都放寬 */
+    div[data-testid="stCameraInput"] {
+        width: 100% !important;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 # ==========================================
 # 0. 表格版面設定(要跟返你實際印刷嘅範本調)
 # ==========================================
@@ -231,9 +260,13 @@ with st.expander("⚠️ 拍攝要求"):
     """)
 
 camera_image = st.camera_input("請對準散工申報表拍攝 (需包含 4 角校正標記 + 大廈標記)")
+st.markdown("**— 或者 —**")
+uploaded_image = st.file_uploader("上載已有嘅圖片（例如相簿入面已影低嘅相）", type=["jpg", "jpeg", "png"])
 
-if camera_image:
-    bytes_data = camera_image.getvalue()
+img_file = camera_image or uploaded_image
+
+if img_file:
+    bytes_data = img_file.getvalue()
     file_bytes = np.asarray(bytearray(bytes_data), dtype=np.uint8)
     img = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
 
@@ -273,10 +306,17 @@ if camera_image:
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 )
 
+                img_ext = "jpg"
+                img_mime = "image/jpeg"
+                if uploaded_image and img_file is uploaded_image:
+                    orig_name = uploaded_image.name.lower()
+                    if orig_name.endswith(".png"):
+                        img_ext, img_mime = "png", "image/png"
+
                 img_url = upload_to_drive(
                     bytes_data,
-                    f"{building}_{today_str}_原始相片.jpg",
-                    "image/jpeg"
+                    f"{building}_{today_str}_原始相片.{img_ext}",
+                    img_mime
                 )
 
                 if excel_url and img_url:
