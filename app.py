@@ -57,18 +57,17 @@ WARP_WIDTH = 3300
 WARP_HEIGHT = 1800
 
 # 表格喺畫布入面嘅相對範圍(留返少少邊界畀角標本身占用嘅位置)
+
 TABLE_LEFT_RATIO = 0.03
 TABLE_RIGHT_RATIO = 0.97
-TABLE_TOP_RATIO = 0.06
+TABLE_TOP_RATIO = 0.07
 TABLE_BOTTOM_RATIO = 0.97
 
-N_HEADER_ROWS = 3      # 日期row + 星期row + 欄位標籤row
-N_DATA_ROWS = 21        # C0001 - C0021
+N_HEADER_ROWS = 3
+N_DATA_ROWS = 21
 N_DAYS = 31
 
-# 左邊資料欄相對闊度比例(散工編號、判頭、散工姓名、工作時間)
-LEFT_COL_RATIOS = [0.22, 0.14, 0.22, 0.22]  # 總和 + 日欄部分 = 1.0
-# 即日欄部分闊度比例 = 1 - sum(LEFT_COL_RATIOS)
+LEFT_COL_RATIOS = [0.06, 0.04, 0.06, 0.06]
 
 # ==========================================
 # 1. Google Drive 自動上載邏輯(不變)
